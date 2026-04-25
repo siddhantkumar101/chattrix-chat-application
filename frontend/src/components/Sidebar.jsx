@@ -136,10 +136,10 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
             >
               <span>←</span> Back to Conversations
             </div>
-            {search.trim() === '' ? (
+            {search.trim().length < 6 ? (
               <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                 <Search size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                <p style={{ fontSize: '14px' }}>Type a name above to search for users.</p>
+                <p style={{ fontSize: '14px' }}>Type at least 6 characters to search for users.</p>
               </div>
             ) : (
               <>
