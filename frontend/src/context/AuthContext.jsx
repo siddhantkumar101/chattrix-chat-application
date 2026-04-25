@@ -7,11 +7,26 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const refreshUser = async () => {
+    try {
+      const { data } = await API.get('/users/profile');
+      setUser({ ...user, ...data });
+      localStorage.setItem('user', JSON.stringify({ ...user, ...data }));
+    } catch (err) {
+      console.error('Failed to refresh user profile:', err);
+    }
+  };
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const token = localStorage.getItem('token');
     if (storedUser && token) {
       setUser(JSON.parse(storedUser));
+      // Fetch fresh profile in background to update contacts/requests
+      API.get('/users/profile').then(({ data }) => {
+        setUser(prev => ({ ...prev, ...data }));
+        localStorage.setItem('user', JSON.stringify({ ...JSON.parse(storedUser), ...data }));
+      }).catch(err => console.error(err));
     }
     setLoading(false);
   }, []);
@@ -43,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, updateUser, loading }}>
+    <AuthContext.Provider value={{ user, login, register, logout, updateUser, refreshUser, loading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -1,5 +1,6 @@
 const Message = require('../models/Message');
 const Conversation = require('../models/Conversation');
+const User = require('../models/User');
 
 // @desc    Send a message
 // @route   POST /api/messages
@@ -9,6 +10,11 @@ const sendMessage = async (req, res) => {
   const senderId = req.user._id;
 
   try {
+    const sender = await User.findById(senderId);
+    if (!sender.contacts.includes(receiverId)) {
+      return res.status(403).json({ message: "You can only message your contacts" });
+    }
+
     let convId = conversationId;
 
     // FormData sends null as string "null" — treat that as no conversation

@@ -28,7 +28,19 @@ const userSchema = new mongoose.Schema({
   isOnline: {
     type: Boolean,
     default: false
-  }
+  },
+  contacts: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  connectionRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  sentRequests: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }]
 }, {
   timestamps: true
 });

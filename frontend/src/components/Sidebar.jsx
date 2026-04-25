@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import API from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
-import { Search, MoreVertical, MessageSquare } from 'lucide-react';
+import { Search, MoreVertical, MessageSquare, UserPlus, Bell } from 'lucide-react';
 import ProfileModal from './ProfileModal';
+import RequestsModal from './RequestsModal';
 
 const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers }) => {
   const [conversations, setConversations] = useState([]);
@@ -10,7 +11,8 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
   const [search, setSearch] = useState('');
   const [showUsers, setShowUsers] = useState(false);
   const [showProfileInfo, setShowProfileInfo] = useState(false);
-  const { user, logout } = useAuth();
+  const [showRequests, setShowRequests] = useState(false);
+  const { user, logout, refreshUser } = useAuth();
 
   useEffect(() => {
     const fetchConversations = async () => {
@@ -29,8 +31,18 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
       const { data } = await API.get('/users');
       setUsers(data);
       setShowUsers(true);
+      await refreshUser(); // refresh current user profile to get latest contacts
     } catch (err) {
       console.error('Failed to fetch users:', err);
+    }
+  };
+
+  const sendConnectionRequest = async (targetUserId) => {
+    try {
+      await API.post(`/users/request/${targetUserId}`);
+      await refreshUser();
+    } catch (err) {
+      console.error('Failed to send request:', err);
     }
   };
 
@@ -60,6 +72,7 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
   return (
     <div className="sidebar">
       {showProfileInfo && <ProfileModal onClose={() => setShowProfileInfo(false)} />}
+      {showRequests && <RequestsModal onClose={() => setShowRequests(false)} />}
       <div className="sidebar-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }} onClick={() => setShowProfileInfo(true)}>
           <img src={user?.avatar} alt="Me" className="avatar" style={{ width: '45px', height: '45px', border: '2px solid var(--primary-color)' }} />
@@ -69,10 +82,19 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
           </div>
         </div>
         <div style={{ display: 'flex', gap: '16px', color: 'var(--text-secondary)' }}>
-          <MessageSquare 
+          <div style={{ position: 'relative', cursor: 'pointer' }} onClick={() => setShowRequests(true)}>
+            <Bell size={22} style={{ transition: 'color 0.3s' }} />
+            {user?.connectionRequests?.length > 0 && (
+              <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--danger)', color: '#fff', fontSize: '10px', width: '16px', height: '16px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {user.connectionRequests.length}
+              </span>
+            )}
+          </div>
+          <UserPlus 
             size={22} 
             style={{ cursor: 'pointer', transition: 'color 0.3s' }}
             onClick={fetchUsers} 
+            title="Find Users"
           />
           <MoreVertical 
             size={22} 
@@ -119,15 +141,32 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
                 No other users found
               </div>
             )}
-            {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).map(u => (
-              <div key={u._id} className="conversation-item" onClick={() => startNewChat(u)}>
-                <img src={u.avatar} alt={u.name} className="avatar" />
-                <div className="conv-info">
-                  <div className="conv-name">{u.name}</div>
-                  <div className="conv-last-msg">{u.email}</div>
+            {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).map(u => {
+              const isContact = user?.contacts?.some(c => c._id === u._id);
+              const isPending = user?.sentRequests?.some(r => r._id === u._id);
+              const hasIncoming = user?.connectionRequests?.some(r => r._id === u._id);
+
+              return (
+                <div key={u._id} className="conversation-item" style={{ display: 'flex', alignItems: 'center', cursor: 'default' }}>
+                  <img src={u.avatar} alt={u.name} className="avatar" />
+                  <div className="conv-info">
+                    <div className="conv-name">{u.name}</div>
+                    <div className="conv-last-msg">{u.email}</div>
+                  </div>
+                  <div>
+                    {isContact ? (
+                      <button onClick={() => startNewChat(u)} style={{ background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Chat</button>
+                    ) : hasIncoming ? (
+                      <button onClick={() => setShowRequests(true)} style={{ background: 'var(--secondary-color)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Review</button>
+                    ) : isPending ? (
+                      <button disabled style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', opacity: 0.7 }}>Pending</button>
+                    ) : (
+                      <button onClick={() => sendConnectionRequest(u._id)} style={{ background: 'var(--primary-color)', border: 'none', color: '#000', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Add</button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </>
         ) : (
           <>
