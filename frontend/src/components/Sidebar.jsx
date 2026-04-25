@@ -136,37 +136,46 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
             >
               <span>←</span> Back to Conversations
             </div>
-            {users.length === 0 && (
-              <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                No other users found
+            {search.trim() === '' ? (
+              <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                <Search size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
+                <p style={{ fontSize: '14px' }}>Type a name above to search for users.</p>
               </div>
-            )}
-            {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).map(u => {
-              const isContact = user?.contacts?.some(c => (c._id || c) === u._id);
-              const isPending = user?.sentRequests?.some(r => (r._id || r) === u._id);
-              const hasIncoming = user?.connectionRequests?.some(r => (r._id || r) === u._id);
+            ) : (
+              <>
+                {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).length === 0 && (
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    No users found matching "{search}"
+                  </div>
+                )}
+                {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).map(u => {
+                  const isContact = user?.contacts?.some(c => (c._id || c) === u._id);
+                  const isPending = user?.sentRequests?.some(r => (r._id || r) === u._id);
+                  const hasIncoming = user?.connectionRequests?.some(r => (r._id || r) === u._id);
 
-              return (
-                <div key={u._id} className="conversation-item" style={{ display: 'flex', alignItems: 'center', cursor: 'default' }}>
-                  <img src={u.avatar} alt={u.name} className="avatar" />
-                  <div className="conv-info">
-                    <div className="conv-name">{u.name}</div>
-                    <div className="conv-last-msg">{u.email}</div>
-                  </div>
-                  <div>
-                    {isContact ? (
-                      <button onClick={() => startNewChat(u)} style={{ background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Chat</button>
-                    ) : hasIncoming ? (
-                      <button onClick={() => setShowRequests(true)} style={{ background: 'var(--secondary-color)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Review</button>
-                    ) : isPending ? (
-                      <button disabled style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', opacity: 0.7 }}>Pending</button>
-                    ) : (
-                      <button onClick={() => sendConnectionRequest(u._id)} style={{ background: 'var(--primary-color)', border: 'none', color: '#000', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Add</button>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                  return (
+                    <div key={u._id} className="conversation-item" style={{ display: 'flex', alignItems: 'center', cursor: 'default' }}>
+                      <img src={u.avatar} alt={u.name} className="avatar" />
+                      <div className="conv-info">
+                        <div className="conv-name">{u.name}</div>
+                        <div className="conv-last-msg">{u.email}</div>
+                      </div>
+                      <div>
+                        {isContact ? (
+                          <button onClick={() => startNewChat(u)} style={{ background: 'transparent', border: '1px solid var(--primary-color)', color: 'var(--primary-color)', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Chat</button>
+                        ) : hasIncoming ? (
+                          <button onClick={() => setShowRequests(true)} style={{ background: 'var(--secondary-color)', border: 'none', color: '#fff', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px' }}>Review</button>
+                        ) : isPending ? (
+                          <button disabled style={{ background: 'transparent', border: '1px solid var(--text-secondary)', color: 'var(--text-secondary)', padding: '6px 12px', borderRadius: '12px', fontSize: '12px', opacity: 0.7 }}>Pending</button>
+                        ) : (
+                          <button onClick={() => sendConnectionRequest(u._id)} style={{ background: 'var(--primary-color)', border: 'none', color: '#000', padding: '6px 12px', borderRadius: '12px', cursor: 'pointer', fontSize: '12px', fontWeight: 'bold' }}>Add</button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </>
+            )}
           </>
         ) : (
           <>
