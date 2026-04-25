@@ -103,16 +103,16 @@ const CallWindow = ({
   }, [callAccepted]);
 
   useEffect(() => {
-    if (localVideoRef.current && localStream) {
+    if (callAccepted && localVideoRef.current && localStream) {
       localVideoRef.current.srcObject = localStream;
     }
-  }, [localStream]);
+  }, [localStream, callAccepted]);
 
   useEffect(() => {
-    if (remoteVideoRef.current && remoteStream) {
+    if (callAccepted && remoteVideoRef.current && remoteStream) {
       remoteVideoRef.current.srcObject = remoteStream;
     }
-  }, [remoteStream]);
+  }, [remoteStream, callAccepted]);
 
   return (
     <div style={{

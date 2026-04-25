@@ -198,10 +198,11 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
   };
 
   const answerCall = async () => {
-    setCallAccepted(true);
     const useVideo = callType === 'video';
     const currentStream = await requestMedia(useVideo);
     if(!currentStream) return;
+    
+    setCallAccepted(true);
 
     const peer = new Peer({
       initiator: false,
