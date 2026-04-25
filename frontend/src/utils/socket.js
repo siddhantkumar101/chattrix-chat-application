@@ -1,6 +1,9 @@
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5555';
+// Hardcoded for Vercel/Render production, fallback to localhost for development
+const SOCKET_URL = import.meta.env.PROD 
+  ? 'https://chattrix-chat-application.onrender.com' 
+  : 'http://localhost:5555';
 
 const socket = io(SOCKET_URL, {
   autoConnect: false,

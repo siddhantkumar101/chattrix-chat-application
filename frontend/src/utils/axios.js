@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5555';
+// Hardcoded for Vercel/Render production, fallback to localhost for development
+const API_URL = import.meta.env.PROD 
+  ? 'https://chattrix-chat-application.onrender.com' 
+  : 'http://localhost:5555';
 
 const API = axios.create({
   baseURL: `${API_URL}/api`,
