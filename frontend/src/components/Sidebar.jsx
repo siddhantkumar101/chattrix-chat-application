@@ -181,8 +181,20 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
           <>
             {filteredConversations.length === 0 && !search && (
               <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                <MessageSquare size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
-                <p style={{ fontSize: '14px' }}>No conversations yet.<br/>Click the icon above to start one!</p>
+                <UserPlus size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
+                <p style={{ fontSize: '14px', lineHeight: '1.5' }}>No conversations yet.<br/>Click the <UserPlus size={14} style={{display: 'inline', verticalAlign: 'middle', margin: '0 2px'}}/> icon above to find and add friends!</p>
+              </div>
+            )}
+            {filteredConversations.length === 0 && search && (
+              <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                <Search size={40} style={{ marginBottom: '16px', opacity: 0.2 }} />
+                <p style={{ fontSize: '14px', marginBottom: '16px' }}>No existing chats found for "{search}".</p>
+                <button 
+                  onClick={fetchUsers}
+                  style={{ background: 'var(--primary-color)', color: '#000', border: 'none', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold' }}
+                >
+                  Search Global Users
+                </button>
               </div>
             )}
             {filteredConversations.map((conv) => {
