@@ -227,6 +227,7 @@ body::before {
   align-items: center;
   border-bottom: 1px solid var(--glass-border);
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .chat-messages {
@@ -302,6 +303,7 @@ body::before {
   gap: 16px;
   border-top: 1px solid var(--glass-border);
   position: relative;
+  flex-shrink: 0;
 }
 
 .chat-actions {
@@ -508,7 +510,7 @@ body::before {
   /* Fluid edge-to-edge container */
   .app-container {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
     margin: 0;
     border: none;
     border-radius: 0;
