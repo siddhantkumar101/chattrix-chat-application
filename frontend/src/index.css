@@ -488,3 +488,72 @@ body::before {
 .auth-footer span:hover {
   text-shadow: 0 0 10px var(--secondary-glow);
 }
+
+/* --------------------------------------------------------
+   Mobile Display & Media Queries
+-------------------------------------------------------- */
+@media (max-width: 768px) {
+  /* Fluid edge-to-edge container */
+  .app-container {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    border: none;
+    border-radius: 0;
+  }
+  
+  /* Mobile Sidebar takes 100% width when shown */
+  .sidebar {
+    width: 100%;
+    border-right: none;
+  }
+  
+  /* Adjust Auth container sizing */
+  .auth-card {
+    width: 90vw;
+    padding: 30px 20px;
+  }
+
+  /* Make header elements wrap naturally */
+  .chat-header {
+    padding: 15px 20px;
+  }
+  
+  /* Adjust message spacing for smaller screens */
+  .chat-messages {
+    padding: 20px 15px;
+  }
+  
+  .message-bubble {
+    max-width: 85%;
+  }
+
+  /* Adjust inputs for mobile */
+  .chat-input-area {
+    padding: 15px;
+    gap: 10px;
+  }
+  
+  .chat-input {
+    padding: 14px 20px;
+  }
+  
+  .send-button {
+    width: 48px;
+    height: 48px;
+  }
+
+  /* Mobile Display Toggle Classes */
+  .mobile-hidden {
+    display: none !important;
+  }
+  
+  .mobile-active {
+    display: flex !important;
+    width: 100% !important;
+  }
+  
+  .mobile-back-btn {
+    display: flex !important;
+  }
+}

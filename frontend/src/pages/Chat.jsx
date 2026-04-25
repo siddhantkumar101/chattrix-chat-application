@@ -38,26 +38,31 @@ const Chat = () => {
 
   return (
     <div className="app-container">
-      <Sidebar 
-        setSelectedConversation={setSelectedConversation} 
-        selectedConversation={selectedConversation}
-        onlineUsers={onlineUsers}
-      />
-      {selectedConversation ? (
-        <ChatBox 
-          conversation={selectedConversation} 
-          setConversation={setSelectedConversation}
+      <div className={`sidebar-container ${selectedConversation ? 'mobile-hidden' : 'mobile-active'}`} style={{ display: 'flex', flex: selectedConversation ? '0 0 380px' : '1', height: '100%' }}>
+        <Sidebar 
+          setSelectedConversation={setSelectedConversation} 
+          selectedConversation={selectedConversation}
           onlineUsers={onlineUsers}
         />
-      ) : (
-        <div className="chat-window" style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <div style={{ textAlign: 'center', opacity: 0.5 }}>
-            <MessageSquare size={80} style={{ marginBottom: '20px', color: 'var(--primary-color)' }} />
-            <h1 style={{ color: 'var(--text-primary)', marginBottom: '10px', fontSize: '24px' }}>Welcome to Chat</h1>
-            <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Select a conversation or start a new one</p>
+      </div>
+      
+      <div className={`chat-container ${selectedConversation ? 'mobile-active' : 'mobile-hidden'}`} style={{ display: 'flex', flex: 1, height: '100%' }}>
+        {selectedConversation ? (
+          <ChatBox 
+            conversation={selectedConversation} 
+            setConversation={setSelectedConversation}
+            onlineUsers={onlineUsers}
+          />
+        ) : (
+          <div className="chat-window" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center', opacity: 0.5 }}>
+              <MessageSquare size={80} style={{ marginBottom: '20px', color: 'var(--primary-color)' }} />
+              <h1 style={{ color: 'var(--text-primary)', marginBottom: '10px', fontSize: '24px' }}>Welcome to Chatrix</h1>
+              <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>Select a conversation or start a new one</p>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };

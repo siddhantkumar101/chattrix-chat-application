@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/axios';
 import socket from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
-import { Send, Paperclip, Smile, MoreVertical, Search, MessageSquare, Phone, Video } from 'lucide-react';
+import { Send, Paperclip, Smile, MoreVertical, Search, MessageSquare, Phone, Video, ArrowLeft } from 'lucide-react';
 import Message from './Message';
 import Peer from 'simple-peer/simplepeer.min.js';
 import CallWindow from './CallWindow';
@@ -228,6 +228,9 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
       )}
 
       <div className="chat-header">
+        <div className="mobile-back-btn" onClick={() => setConversation(null)} style={{ marginRight: '15px', cursor: 'pointer', display: 'none' }}>
+          <ArrowLeft size={24} color="var(--primary-color)" />
+        </div>
         <div style={{ position: 'relative', marginRight: '16px' }}>
           <img src={otherUser?.avatar} alt={otherUser?.name} className="avatar" style={{ width: '45px', height: '45px', margin: 0 }} />
           {isOnline && (
