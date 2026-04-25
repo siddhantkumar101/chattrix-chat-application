@@ -82,10 +82,10 @@ const start = async () => {
       });
 
       // WebRTC Signaling
-      socket.on('callUser', ({ userToCall, signalData, from, name }) => {
+      socket.on('callUser', ({ userToCall, signalData, from, name, callType }) => {
         const receiverSocketId = onlineUsers.get(userToCall);
         if (receiverSocketId) {
-          io.to(receiverSocketId).emit('callUser', { signal: signalData, from, name });
+          io.to(receiverSocketId).emit('callUser', { signal: signalData, from, name, callType });
         }
       });
 
