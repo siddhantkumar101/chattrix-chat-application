@@ -11,8 +11,10 @@ const sendMessage = async (req, res) => {
 
   try {
     const sender = await User.findById(senderId);
-    if (!sender.contacts.includes(receiverId)) {
-      return res.status(403).json({ message: "You can only message your contacts" });
+    const isContact = sender.contacts.some(contactId => contactId.toString() === receiverId.toString());
+    
+    if (!isContact) {
+      return res.status(403).json({ message: "You can only message your contacts. Please send a connection request first." });
     }
 
     let convId = conversationId;

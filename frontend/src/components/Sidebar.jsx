@@ -142,9 +142,9 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
               </div>
             )}
             {users.filter(u => u.name?.toLowerCase().includes(search.toLowerCase())).map(u => {
-              const isContact = user?.contacts?.some(c => c._id === u._id);
-              const isPending = user?.sentRequests?.some(r => r._id === u._id);
-              const hasIncoming = user?.connectionRequests?.some(r => r._id === u._id);
+              const isContact = user?.contacts?.some(c => (c._id || c) === u._id);
+              const isPending = user?.sentRequests?.some(r => (r._id || r) === u._id);
+              const hasIncoming = user?.connectionRequests?.some(r => (r._id || r) === u._id);
 
               return (
                 <div key={u._id} className="conversation-item" style={{ display: 'flex', alignItems: 'center', cursor: 'default' }}>

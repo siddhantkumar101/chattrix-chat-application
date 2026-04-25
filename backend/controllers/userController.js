@@ -89,7 +89,10 @@ const requestContact = async (req, res) => {
 
     if (!targetUser) return res.status(404).json({ message: "User not found" });
 
-    if (targetUser.connectionRequests.includes(currentUserId) || targetUser.contacts.includes(currentUserId)) {
+    const alreadyRequested = targetUser.connectionRequests.some(id => id.toString() === currentUserId.toString());
+    const alreadyContact = targetUser.contacts.some(id => id.toString() === currentUserId.toString());
+
+    if (alreadyRequested || alreadyContact) {
       return res.status(400).json({ message: "Request already sent or already contacts" });
     }
 
@@ -116,7 +119,8 @@ const acceptContact = async (req, res) => {
     const currentUser = await User.findById(currentUserId);
     const targetUser = await User.findById(targetUserId);
 
-    if (!currentUser.connectionRequests.includes(targetUserId)) {
+    const hasRequest = currentUser.connectionRequests.some(id => id.toString() === targetUserId.toString());
+    if (!hasRequest) {
       return res.status(400).json({ message: "No connection request found" });
     }
 

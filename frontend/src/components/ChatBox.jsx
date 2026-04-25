@@ -11,11 +11,33 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [image, setImage] = useState(null);
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const scrollRef = useRef();
   
   const otherUser = conversation.participants.find(p => p._id !== user._id);
   const isOnline = onlineUsers.includes(otherUser?._id);
+
+  const isContact = user?.contacts?.some(c => (c._id || c) === otherUser?._id);
+  const isPending = user?.sentRequests?.some(r => (r._id || r) === otherUser?._id);
+  const hasIncoming = user?.connectionRequests?.some(r => (r._id || r) === otherUser?._id);
+
+  const sendConnectionRequest = async (targetUserId) => {
+    try {
+      await API.post(`/users/request/${targetUserId}`);
+      if (refreshUser) await refreshUser();
+    } catch (err) {
+      console.error('Failed to send request:', err);
+    }
+  };
+
+  const acceptRequest = async (targetUserId) => {
+    try {
+      await API.post(`/users/accept/${targetUserId}`);
+      if (refreshUser) await refreshUser();
+    } catch (err) {
+      console.error('Failed to accept request:', err);
+    }
+  };
 
   // WebRTC State
   const [stream, setStream] = useState();
@@ -258,8 +280,12 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
           </div>
         </div>
         <div className="chat-actions">
-          <Phone size={20} cursor="pointer" onClick={callUser} />
-          <Video size={20} cursor="pointer" onClick={callUser} />
+          {isContact && (
+            <>
+              <Phone size={20} cursor="pointer" onClick={callUser} />
+              <Video size={20} cursor="pointer" onClick={callUser} />
+            </>
+          )}
           <MoreVertical size={20} cursor="pointer" className="mobile-hidden" />
         </div>
       </div>
@@ -283,50 +309,66 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
         ))}
       </div>
 
-      <div className="chat-input-area">
-        <div className="chat-input-actions">
-          <Smile size={24} cursor="pointer" className="mobile-hidden" />
-          <label htmlFor="file-upload" style={{ display: 'flex', alignItems: 'center' }}>
-            <Paperclip size={24} cursor="pointer" />
-          </label>
-        </div>
-        <input 
-          id="file-upload" 
-          type="file" 
-          hidden 
-          onChange={(e) => setImage(e.target.files[0])} 
-        />
-        <div style={{ flex: 1, position: 'relative' }}>
+      {isContact ? (
+        <div className="chat-input-area">
+          <div className="chat-input-actions">
+            <Smile size={24} cursor="pointer" className="mobile-hidden" />
+            <label htmlFor="file-upload" style={{ display: 'flex', alignItems: 'center' }}>
+              <Paperclip size={24} cursor="pointer" />
+            </label>
+          </div>
           <input 
-            className="chat-input" 
-            placeholder="Type a message..." 
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={handleKeyDown}
+            id="file-upload" 
+            type="file" 
+            hidden 
+            onChange={(e) => setImage(e.target.files[0])} 
           />
-          {image && (
-            <div style={{ 
-              position: 'absolute', 
-              top: '-40px', 
-              left: '0', 
-              background: 'var(--glass-bg)', 
-              padding: '4px 12px', 
-              borderRadius: '8px',
-              fontSize: '12px',
-              border: '1px solid var(--primary-color)'
-            }}>
-              📎 {image.name}
-            </div>
+          <div style={{ flex: 1, position: 'relative' }}>
+            <input 
+              className="chat-input" 
+              placeholder="Type a message..." 
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            {image && (
+              <div style={{ 
+                position: 'absolute', 
+                top: '-40px', 
+                left: '0', 
+                background: 'var(--glass-bg)', 
+                padding: '4px 12px', 
+                borderRadius: '8px',
+                fontSize: '12px',
+                border: '1px solid var(--primary-color)'
+              }}>
+                📎 {image.name}
+              </div>
+            )}
+          </div>
+          <button 
+            className="send-button"
+            onClick={handleSend}
+            disabled={!newMessage && !image}
+          >
+            <Send size={20} />
+          </button>
+        </div>
+      ) : (
+        <div className="chat-input-area" style={{ justifyContent: 'center', background: 'rgba(5, 5, 15, 0.4)' }}>
+          {hasIncoming ? (
+            <button onClick={() => acceptRequest(otherUser._id)} style={{ background: 'var(--secondary-color)', border: 'none', color: '#fff', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Accept Connection Request
+            </button>
+          ) : isPending ? (
+            <span style={{ color: 'var(--text-secondary)', padding: '10px' }}>Connection Request Pending...</span>
+          ) : (
+            <button onClick={() => sendConnectionRequest(otherUser._id)} style={{ background: 'var(--primary-color)', border: 'none', color: '#000', padding: '10px 20px', borderRadius: '20px', cursor: 'pointer', fontWeight: 'bold' }}>
+              Add Contact to Message
+            </button>
           )}
         </div>
-        <button 
-          className="send-button"
-          onClick={handleSend}
-          disabled={!newMessage && !image}
-        >
-          <Send size={20} />
-        </button>
-      </div>
+      )}
     </div>
   );
 };
