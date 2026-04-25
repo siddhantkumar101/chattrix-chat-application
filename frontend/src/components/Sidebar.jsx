@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from '../utils/axios';
 import { useAuth } from '../context/AuthContext';
-import { Search, MoreVertical, MessageSquare, UserPlus, Bell } from 'lucide-react';
+import { Search, LogOut, MessageSquare, UserPlus, Bell } from 'lucide-react';
 import ProfileModal from './ProfileModal';
 import RequestsModal from './RequestsModal';
 
@@ -96,9 +96,9 @@ const Sidebar = ({ setSelectedConversation, selectedConversation, onlineUsers })
             onClick={fetchUsers} 
             title="Find Users"
           />
-          <MoreVertical 
+          <LogOut 
             size={22} 
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', color: 'var(--danger)', transition: 'opacity 0.3s' }}
             onClick={logout} 
             title="Logout" 
           />

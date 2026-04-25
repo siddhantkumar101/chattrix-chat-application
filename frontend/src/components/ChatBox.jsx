@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import API from '../utils/axios';
 import socket from '../utils/socket';
 import { useAuth } from '../context/AuthContext';
-import { Send, Paperclip, Smile, MoreVertical, Search, MessageSquare, Phone, Video, ArrowLeft } from 'lucide-react';
+import { Send, Paperclip, Smile, MessageSquare, Phone, Video, ArrowLeft } from 'lucide-react';
 import Message from './Message';
 import Peer from 'simple-peer/simplepeer.min.js';
 import CallWindow from './CallWindow';
@@ -49,6 +49,7 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
   const [callEnded, setCallEnded] = useState(false);
   const [inCall, setInCall] = useState(false);
   const [remoteStream, setRemoteStream] = useState();
+  const [callType, setCallType] = useState('video'); // 'video' or 'audio'
   const connectionRef = useRef();
 
   useEffect(() => {
@@ -84,6 +85,7 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
         setCaller(data.from);
         setCallerName(data.name);
         setCallerSignal(data.signal);
+        setCallType(data.callType || 'video');
       }
     });
 
@@ -160,8 +162,10 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
     }
   }
 
-  const callUser = async () => {
-    const currentStream = await requestMedia(true);
+  const callUser = async (type = 'video') => {
+    const useVideo = type === 'video';
+    setCallType(type);
+    const currentStream = await requestMedia(useVideo);
     if(!currentStream) return;
     
     setInCall(true);
@@ -176,7 +180,8 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
         userToCall: otherUser._id,
         signalData: data,
         from: user._id,
-        name: user.name
+        name: user.name,
+        callType: type
       });
     });
 
@@ -194,7 +199,8 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
 
   const answerCall = async () => {
     setCallAccepted(true);
-    const currentStream = await requestMedia(true);
+    const useVideo = callType === 'video';
+    const currentStream = await requestMedia(useVideo);
     if(!currentStream) return;
 
     const peer = new Peer({
@@ -250,6 +256,7 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
           name={receivingCall ? callerName : otherUser.name} 
           receivingCall={receivingCall} 
           answerCall={answerCall}
+          callType={callType}
         />
       )}
 
@@ -282,11 +289,10 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
         <div className="chat-actions">
           {isContact && (
             <>
-              <Phone size={20} cursor="pointer" onClick={callUser} />
-              <Video size={20} cursor="pointer" onClick={callUser} />
+              <Phone size={20} cursor="pointer" onClick={() => callUser('audio')} title="Voice Call" />
+              <Video size={20} cursor="pointer" onClick={() => callUser('video')} title="Video Call" />
             </>
           )}
-          <MoreVertical size={20} cursor="pointer" className="mobile-hidden" />
         </div>
       </div>
 
