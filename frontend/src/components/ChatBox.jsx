@@ -76,8 +76,12 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
     };
   }, [conversation._id, user._id]);
 
+  const messagesContainerRef = useRef();
+
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSend = async (e) => {
@@ -247,9 +251,9 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
             }} />
           )}
         </div>
-        <div style={{ flex: 1 }}>
-          <div className="conv-name" style={{ fontSize: '17px' }}>{otherUser?.name}</div>
-          <div style={{ fontSize: '12px', color: isOnline ? 'var(--primary-color)' : 'var(--text-secondary)', fontWeight: isOnline ? '600' : '400' }}>
+        <div style={{ flex: 1, minWidth: 0, marginRight: '10px' }}>
+          <div className="conv-name" style={{ fontSize: '17px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{otherUser?.name}</div>
+          <div style={{ fontSize: '12px', color: isOnline ? 'var(--primary-color)' : 'var(--text-secondary)', fontWeight: isOnline ? '600' : '400', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {isOnline ? 'Online' : 'Offline'}
           </div>
         </div>
@@ -260,7 +264,7 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
         </div>
       </div>
 
-      <div className="chat-messages">
+      <div className="chat-messages" ref={messagesContainerRef}>
         {messages.length === 0 && (
           <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0.3 }}>
             <div style={{ textAlign: 'center' }}>
@@ -273,7 +277,6 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
           <div 
             key={msg._id || index} 
             className={`message-row ${msg.sender?._id === user._id || msg.sender === user._id ? 'sent' : 'received'}`} 
-            ref={index === messages.length - 1 ? scrollRef : null}
           >
             <Message message={msg} isOwn={msg.sender?._id === user._id || msg.sender === user._id} />
           </div>

@@ -46,7 +46,7 @@ const Chat = () => {
         />
       </div>
       
-      <div className={`chat-container ${selectedConversation ? 'mobile-active' : 'mobile-hidden'}`} style={{ display: 'flex', flex: 1, height: '100%' }}>
+      <div className={`chat-container ${selectedConversation ? 'mobile-active' : 'mobile-hidden'}`} style={{ display: 'flex', flex: 1, height: '100%', overflow: 'hidden', maxWidth: '100%' }}>
         {selectedConversation ? (
           <ChatBox 
             conversation={selectedConversation} 
