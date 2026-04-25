@@ -253,10 +253,10 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
             {isOnline ? 'Online' : 'Offline'}
           </div>
         </div>
-        <div style={{ display: 'flex', gap: '20px', color: 'var(--text-secondary)' }}>
-          <Phone size={20} cursor="pointer" onClick={callUser} style={{ hover: { color: 'var(--primary-color)'} }} />
+        <div className="chat-actions">
+          <Phone size={20} cursor="pointer" onClick={callUser} />
           <Video size={20} cursor="pointer" onClick={callUser} />
-          <MoreVertical size={20} cursor="pointer" />
+          <MoreVertical size={20} cursor="pointer" className="mobile-hidden" />
         </div>
       </div>
 
@@ -281,8 +281,8 @@ const ChatBox = ({ conversation, setConversation, onlineUsers }) => {
       </div>
 
       <div className="chat-input-area">
-        <div style={{ display: 'flex', gap: '15px', color: 'var(--text-secondary)' }}>
-          <Smile size={24} cursor="pointer" />
+        <div className="chat-input-actions">
+          <Smile size={24} cursor="pointer" className="mobile-hidden" />
           <label htmlFor="file-upload" style={{ display: 'flex', alignItems: 'center' }}>
             <Paperclip size={24} cursor="pointer" />
           </label>
